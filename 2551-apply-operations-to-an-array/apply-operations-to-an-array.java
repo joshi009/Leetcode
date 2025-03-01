@@ -21,9 +21,9 @@ class Solution {
         }
 
         // Step 3: Append zeros to maintain the original size
-        while (zeroCount < n) {
-            modifiedNums[zeroCount++] = 0;
-        }
+        // while (zeroCount < n) {
+        //     modifiedNums[zeroCount++] = 0;
+        // }
 
         return modifiedNums;
     }
