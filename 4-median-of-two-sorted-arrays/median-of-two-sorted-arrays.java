@@ -1,44 +1,27 @@
+import java.util.Arrays;
+
 class Solution {
     public double findMedianSortedArrays(int[] nums1, int[] nums2) {
-     int i= 0;
-     int j=0;
-     int k=0;
+        // Brute-force: merge without caring about sort order
+        int n = nums1.length;
+        int m = nums2.length;
+        int[] combined = new int[n + m];
 
-     int ans[]=new int[nums1.length+ nums2.length];
-     while(i< nums1.length && j< nums2.length)
-     {
-         if(nums1[i]<nums2[j])
-         {
-             ans[k]=nums1[i];
-             i++;
-         }
-         else{
-             ans[k]=nums2[j];
-             j++;
-
-         }
-         k++;
-     }
-     while (i<nums1.length){
-         ans[k]=nums1[i];
-         i++;
-         k++;
-     }
-        while (j<nums2.length){
-            ans[k]=nums2[j];
-            j++;
-            k++;
+        for (int i = 0; i < n; i++) {
+            combined[i] = nums1[i];
         }
-        int total= ans.length;
+        for (int j = 0; j < m; j++) {
+            combined[n + j] = nums2[j];
+        }
+
+        // Inefficient sort (for large inputs this may TLE)
+        Arrays.sort(combined);
+
+        int total = combined.length;
         if (total % 2 == 1) {
-            // If the total number of elements is odd, return the middle element as the median.
-            return (double) ans[total / 2];
+            return (double) combined[total / 2];
         } else {
-            // If the total number of elements is even, calculate the average of the two middle elements as the median.
-            int middle1 = ans[total / 2 - 1];
-            int middle2 = ans[total / 2];
-            return ((double) middle1 + (double) middle2) / 2.0;
+            return ((double) combined[total / 2 - 1] + (double) combined[total / 2]) / 2.0;
         }
-
     }
 }
