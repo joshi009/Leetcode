@@ -1,18 +1,24 @@
-class Solution {
+import java.util.TreeSet;
+
+public class Solution {
     public int thirdMax(int[] nums) {
-        TreeSet<Integer> set=new TreeSet<>();
-        for(int n:nums)
-        {
-            set.add(n);
+        // TreeSet to keep numbers in sorted order and only unique elements
+        TreeSet<Integer> set = new TreeSet<>();
+
+        for (int num : nums) {
+            set.add(num); 
+
+           
+            if (set.size() > 3) {
+                set.remove(set.first()); 
+            }
         }
-        if(set.size()<3)
-        {
-            return set.pollLast();
+
+        
+        if (set.size() == 3) {
+            return set.first();
         }
-        set.pollLast();
-        set.pollLast();
-        
-        return set.pollLast();
-        
+
+        return set.last();
     }
 }
