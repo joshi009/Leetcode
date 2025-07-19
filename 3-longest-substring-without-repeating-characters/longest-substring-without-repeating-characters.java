@@ -1,20 +1,27 @@
+import java.util.*;
+
 class Solution {
     public int lengthOfLongestSubstring(String s) {
-        int i=0;
-        int j=0;
-        Set<Character>set=new HashSet<>();
-        int maxl=Integer.MIN_VALUE;
-        while(j<s.length())
-        {
-          while(set.contains(s.charAt(j)))
-          {  
-            set.remove(s.charAt(i));
-            i++;
-          } 
-          set.add(s.charAt(j));
-          maxl=Math.max(maxl,j-i+1);
-          j++;
+        Map<Character, Integer> map = new HashMap<>();
+        int maxLen = 0;
+        int start = 0; // start of the window
+
+        for (int end = 0; end < s.length(); end++) {
+            char current = s.charAt(end);
+
+            // If character is seen and index is within current window
+            if (map.containsKey(current) && map.get(current) >= start) {
+                // Move the start to one past the last seen index
+                start = map.get(current) + 1;
+            }
+
+            // Update the last seen index of current character
+            map.put(current, end);
+
+            // Calculate window length
+            maxLen = Math.max(maxLen, end - start + 1);
         }
-         return maxl==Integer.MIN_VALUE?0:maxl;       
+
+        return maxLen;
     }
 }
