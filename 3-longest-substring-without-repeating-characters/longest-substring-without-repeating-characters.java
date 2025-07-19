@@ -1,27 +1,15 @@
-import java.util.*;
-
 class Solution {
     public int lengthOfLongestSubstring(String s) {
-        Map<Character, Integer> map = new HashMap<>();
-        int maxLen = 0;
-        int start = 0; // start of the window
+        int n =s.length();
+        int maxLength= 0;
+        int[] lastIndex = new int[128];
 
-        for (int end = 0; end < s.length(); end++) {
-            char current = s.charAt(end);
-
-            // If character is seen and index is within current window
-            if (map.containsKey(current) && map.get(current) >= start) {
-                // Move the start to one past the last seen index
-                start = map.get(current) + 1;
-            }
-
-            // Update the last seen index of current character
-            map.put(current, end);
-
-            // Calculate window length
-            maxLen = Math.max(maxLen, end - start + 1);
+        for (int start = 0, end = 0; end < n; end ++){
+            char currentChar = s.charAt(end);
+            start = Math.max(start, lastIndex[currentChar]);
+            maxLength = Math.max(maxLength, end - start + 1);
+            lastIndex[currentChar]= end + 1;
         }
-
-        return maxLen;
+        return maxLength;
     }
 }
