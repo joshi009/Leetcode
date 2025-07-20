@@ -1,44 +1,36 @@
 class Solution {
     public List<Integer> findAnagrams(String s, String p) {
-        int m = s.length();
-        int n = p.length();
-        ArrayList<Integer> list = new ArrayList<>();
-        HashMap<Character, Integer> pmap = new HashMap<>();
+        int m = s.length(), n = p.length();
+        List<Integer> result = new ArrayList<>();
+        if (m < n) return result;
+
+        // 1) Build frequency array for p
+        int[] pFreq = new int[26];
         for (int i = 0; i < n; i++) {
-            char ch = p.charAt(i);
-            if (!pmap.containsKey(ch)) {
-                pmap.put(ch, 0);
-            }
-            pmap.put(ch, pmap.get(ch) + 1);
-
-        }
-        HashMap<Character, Integer> map = new HashMap<>();
-
-        int i = 0;
-        int j = 0;
-        while (j < m) {
-            char ch = s.charAt(j);
-            map.put(ch, map.getOrDefault(ch, 0) + 1);
-            if (j - i + 1 == n) {
-                if (map.equals(pmap)) {
-                    list.add(i);
-                    
-                }
-                char rem=s.charAt(i);
-                map.put(rem,map.get(rem)-1);
-                if(map.get(rem)==0)
-                {
-                    map.remove(rem);
-                }
-                i++;
-
-                
-            }
-            j++;
-
+            pFreq[p.charAt(i) - 'a']++;
         }
 
-        return list;
+        // 2) Sliding window freq over s
+        int[] window = new int[26];
+        // initialize first window of size n−1
+        for (int i = 0; i < n - 1; i++) {
+            window[s.charAt(i) - 'a']++;
+        }
 
+        // now slide, adding one char at right and removing one at left each time
+        for (int i = n - 1, left = 0; i < m; i++, left++) {
+            // include s[i]
+            window[s.charAt(i) - 'a']++;
+
+            // check for anagram match
+            if (Arrays.equals(window, pFreq)) {
+                result.add(left);
+            }
+
+            // remove s[left] to slide window
+            window[s.charAt(left) - 'a']--;
+        }
+
+        return result;
     }
 }
