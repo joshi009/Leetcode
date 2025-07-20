@@ -4,31 +4,30 @@ class Solution {
         List<Integer> result = new ArrayList<>();
         if (m < n) return result;
 
-        // 1) Build frequency array for p
+        // Build frequency array for p
         int[] pFreq = new int[26];
-        for (int i = 0; i < n; i++) {
-            pFreq[p.charAt(i) - 'a']++;
+        for (int k = 0; k < n; k++) {
+            pFreq[p.charAt(k) - 'a']++;
         }
 
-        // 2) Sliding window freq over s
+        // Sliding window frequency for s
         int[] window = new int[26];
-        // initialize first window of size n−1
-        for (int i = 0; i < n - 1; i++) {
-            window[s.charAt(i) - 'a']++;
-        }
+        int i = 0, j = 0;
+        while (j < m) {
+            // include s[j]
+            window[s.charAt(j) - 'a']++;
 
-        // now slide, adding one char at right and removing one at left each time
-        for (int i = n - 1, left = 0; i < m; i++, left++) {
-            // include s[i]
-            window[s.charAt(i) - 'a']++;
-
-            // check for anagram match
-            if (Arrays.equals(window, pFreq)) {
-                result.add(left);
+            // once window size == n, check and then slide
+            if (j - i + 1 == n) {
+                // compare
+                if (Arrays.equals(window, pFreq)) {
+                    result.add(i);
+                }
+                // remove s[i] as we slide forward
+                window[s.charAt(i) - 'a']--;
+                i++;
             }
-
-            // remove s[left] to slide window
-            window[s.charAt(left) - 'a']--;
+            j++;
         }
 
         return result;
