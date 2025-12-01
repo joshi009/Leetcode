@@ -1,39 +1,43 @@
 class Solution {
     public long maxRunTime(int n, int[] batteries) {
-        Arrays.sort(batteries);
-        long result = 0;
-        long sum = 0;
-        for (int i = 0; i < batteries.length - n; i++) {
-            sum += batteries[i];
-        }
-
-        int start = batteries.length - n;
-        int end = batteries.length;
-
-        long left = 0;
-        long right = sum + batteries[batteries.length - 1];
-        while (left <= right) {
-            long mid = left + (right - left) / 2;
-            if (isValid(batteries, start, end, sum, mid)) {
-                result = mid;
-                left = mid + 1;
-            } else {
-                right = mid - 1;
+        long sum=0;
+        int max=0;
+        for(int i=0;i<batteries.length;i++){
+            sum+=batteries[i];
+            if(batteries[i]>max){
+                max=batteries[i];
             }
         }
-
+        long right=sum/n;
+        if(right>=max){
+            return right;
+        }
+        long left=0;
+        long result=0;
+        while(left<=right){
+           long mid=left+(right-left)/2;
+           if(canCoverAllComputer(batteries,n,mid)){
+               result=mid;
+               left=mid+1;
+           }else{
+               right=mid-1;
+           }
+        }
         return result;
     }
-
-    private static boolean isValid(int[] batteries, int start, int end, long sum, long target) {
-        for (int i = start; i < end; i++) {
-            if (batteries[i] < target) {
-                sum -= target - batteries[i];
+    
+    public boolean canCoverAllComputer(int[] batteries,int n,long time){
+        long sum=0;
+        for(int i=0;i<batteries.length;i++){
+            if(batteries[i]>=time){
+                n--;
+            }else{
+                sum+=batteries[i];
             }
-            if (sum < 0) {
-                return false;
+            if(sum>=(long)n*time){
+                return true;
             }
         }
-        return true;
+        return false;
     }
 }
