@@ -1,34 +1,50 @@
 class Solution {
-    public int countPartitions(int[] nums, int k) {
-        final long MOD = 1_000_000_007L;
-        int n = nums.length;
+        public int countPartitions(int[] A, int k) {
+        int n = A.length, mod = 1_000_000_007, acc = 1;
+        int[] dp = new int[n + 1];
+        dp[0] = 1;
 
-        long[] dp = new long[n+1];
-        long[] pref = new long[n+1];
-        dp[0] = pref[0] = 1;
+        Deque<Integer> minq = new ArrayDeque<>();
+        Deque<Integer> maxq = new ArrayDeque<>();
+        for (int i = 0, j = 0; j < n; ++j) {
+            while (!maxq.isEmpty() && A[j] > A[maxq.peekLast()])
+                maxq.pollLast();
+            maxq.addLast(j);
 
-        java.util.Deque<Integer> minD = new java.util.ArrayDeque<>();
-        java.util.Deque<Integer> maxD = new java.util.ArrayDeque<>();
+            while (!minq.isEmpty() && A[j] < A[minq.peekLast()])
+                minq.pollLast();
+            minq.addLast(j);
 
-        int L = 0;
-
-        for (int i = 0; i < n; i++) {
-            while (!minD.isEmpty() && nums[minD.peekLast()] > nums[i]) minD.pollLast();
-            minD.addLast(i);
-            while (!maxD.isEmpty() && nums[maxD.peekLast()] < nums[i]) maxD.pollLast();
-            maxD.addLast(i);
-
-            while (L <= i && nums[maxD.peekFirst()] - nums[minD.peekFirst()] > k) {
-                if (minD.peekFirst() == L) minD.pollFirst();
-                if (maxD.peekFirst() == L) maxD.pollFirst();
-                L++;
+            while (A[maxq.peekFirst()] - A[minq.peekFirst()] > k) {
+                acc = (acc - dp[i++] + mod) % mod;
+                if (minq.peekFirst() < i)
+                    minq.pollFirst();
+                if (maxq.peekFirst() < i)
+                    maxq.pollFirst();
             }
 
-            dp[i+1] = pref[i] - (L > 0 ? pref[L-1] : 0);
-            dp[i+1] = (dp[i+1] % MOD + MOD) % MOD;
-            pref[i+1] = (pref[i] + dp[i+1]) % MOD;
+            dp[j + 1] = acc;
+            acc = (acc + dp[j + 1]) % mod;
         }
 
-        return (int) dp[n];
+        return dp[n];
     }
 }
+/*
+Example 1:
+
+Input: nums = [9,4,1,3,7], k = 4
+
+Output: 6
+
+Explanation:
+
+There are 6 valid partitions where the difference between the maximum and minimum elements in each segment is at most k = 4:
+
+[[9], [4], [1], [3], [7]]
+[[9], [4], [1], [3, 7]]
+[[9], [4], [1, 3], [7]]
+[[9], [4, 1], [3], [7]]
+[[9], [4, 1], [3, 7]]
+[[9], [4, 1, 3], [7]]
+*/
