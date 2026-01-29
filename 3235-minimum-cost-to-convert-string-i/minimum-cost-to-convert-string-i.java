@@ -1,46 +1,52 @@
+import java.util.*;
 
 class Solution {
-    public long minimumCost(String source, String target, char[] original, char[] changed, int[] cost) {
-        
-        long infinity = Integer.MAX_VALUE;
-        
-        long[][] dist = new long[26][26];
+    private void dijkstra(int src, List<int[]>[] adj, int[] dist) {
+        PriorityQueue<int[]> pq = new PriorityQueue<>(Comparator.comparingInt(a -> a[0]));
+        dist[src] = 0;
+        pq.offer(new int[]{0, src});
 
-        for (int i = 0; i < 26; i++) {
-            Arrays.fill(dist[i], infinity);
-            dist[i][i] = 0;
-        }
+        while (!pq.isEmpty()) {
+            int[] cur = pq.poll();
+            int d = cur[0], u = cur[1];
 
-        for (int i = 0; i < original.length; ++i) {
-            int u = original[i] - 'a';
-            int v = changed[i] - 'a';
-            dist[u][v] = Math.min(dist[u][v], (long) cost[i]);
-        }
+            if (d > dist[u]) continue;
 
-        for (int k = 0; k < 26; ++k) {
-            for (int i = 0; i < 26; ++i) {
-                for (int j = 0; j < 26; ++j) {
-                    if (dist[i][k] < infinity && dist[k][j] < infinity) {
-                        dist[i][j] = Math.min(dist[i][j], dist[i][k] + dist[k][j]);
-                    }
+            for (int[] edge : adj[u]) {
+                int v = edge[0], w = edge[1];
+                if (dist[v] > d + w) {
+                    dist[v] = d + w;
+                    pq.offer(new int[]{dist[v], v});
                 }
             }
         }
+    }
 
-        long totalCost = 0;
-        int n = source.length();
+    public long minimumCost(String source, String target, char[] original, char[] changed, int[] cost) {
+        if (source.length() != target.length()) return -1;
 
-        for (int i = 0; i < n; ++i) {
-            int u = source.charAt(i) - 'a';
-            int v = target.charAt(i) - 'a';
+        List<int[]>[] adj = new ArrayList[26];
+        for (int i = 0; i < 26; i++) adj[i] = new ArrayList<>();
 
-            if (dist[u][v] >= infinity) {
-                return -1;
-            }
-            
-            totalCost += dist[u][v];
+        for (int i = 0; i < original.length; i++) {
+            adj[original[i] - 'a'].add(new int[]{changed[i] - 'a', cost[i]});
         }
 
-        return totalCost;
+        int[][] dist = new int[26][26];
+        for (int i = 0; i < 26; i++) {
+            Arrays.fill(dist[i], Integer.MAX_VALUE);
+            dijkstra(i, adj, dist[i]);
+        }
+
+        long ans = 0;
+        for (int i = 0; i < source.length(); i++) {
+            int u = source.charAt(i) - 'a';
+            int v = target.charAt(i) - 'a';
+            if (u == v) continue;
+            if (dist[u][v] == Integer.MAX_VALUE) return -1;
+            ans += dist[u][v];
+        }
+
+        return ans;
     }
 }
